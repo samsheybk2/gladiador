@@ -140,15 +140,28 @@ const projects = [
 ];
 
 const track = document.getElementById('carouselTrack');
+const modal = document.getElementById('projectModal');
+const modalIframe = document.getElementById('modalIframe');
+const modalVisit = document.getElementById('modalVisit');
+const modalClose = document.getElementById('modalClose');
+
 if (track) {
   const buildCards = (items) => {
     items.forEach((p) => {
-      const card = document.createElement('a');
+      const card = document.createElement('div');
       card.className = 'project-card';
-      card.href = p.url;
-      card.target = '_blank';
-      card.rel = 'noopener noreferrer';
+      card.dataset.url = p.url;
       card.innerHTML = `<span>${p.name}</span>`;
+
+      card.addEventListener('click', () => {
+        if (!isDown) {
+          modalIframe.src = p.url;
+          modalVisit.href = p.url;
+          modal.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+
       track.appendChild(card);
     });
   };
@@ -156,15 +169,30 @@ if (track) {
   buildCards(projects);
   buildCards(projects);
 
+  if (modal) {
+    const closeModal = () => {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      modalIframe.src = '';
+    };
+
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  }
+
   let isDown = false;
   let startX;
   let scrollLeft;
   let autoScroll = true;
 
   const cardWidth = 240;
-  const gap = 16;
   const step = 0.8;
-  const totalWidth = projects.length * (cardWidth + gap);
+  const totalWidth = projects.length * (cardWidth + 16);
 
   track.addEventListener('mousedown', (e) => {
     isDown = true;
