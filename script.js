@@ -152,14 +152,16 @@ if (track) {
       card.className = 'project-card';
       card.innerHTML = `<span>${p.name}</span>`;
 
-      const nameSpan = card.querySelector('span');
+      const previewSpan = document.createElement('span');
+      previewSpan.className = 'card-preview-label';
+      previewSpan.textContent = 'Ver vista previa';
 
       card.addEventListener('mouseenter', () => {
-        nameSpan.textContent = 'Ver vista previa';
+        card.appendChild(previewSpan);
       });
 
       card.addEventListener('mouseleave', () => {
-        nameSpan.textContent = p.name;
+        if (previewSpan.parentNode) previewSpan.remove();
       });
 
       card.addEventListener('click', () => {

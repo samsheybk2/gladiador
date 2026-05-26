@@ -345,6 +345,13 @@ h1 {
   pointer-events: none;
 }
 
+.card-preview-label {
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-top: 0.3rem;
+}
+
 .modal-overlay {
   display: none;
   position: fixed;
