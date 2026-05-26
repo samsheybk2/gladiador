@@ -131,3 +131,85 @@ if (canvas) {
   resizeCanvas();
   draw();
 }
+
+const projects = [
+  { name: 'Antojos Oy', url: 'https://antojosoy.vercel.app/' },
+  { name: 'Creaciones DJ', url: 'https://creacionesdj.vercel.app/' },
+  { name: 'Amieluz Body', url: 'https://amieluzbody.vercel.app/' },
+  { name: 'CCS Commission System', url: 'https://ccs-commission-system.vercel.app/' },
+];
+
+const track = document.getElementById('carouselTrack');
+if (track) {
+  const buildCards = (items) => {
+    items.forEach((p) => {
+      const card = document.createElement('a');
+      card.className = 'project-card';
+      card.href = p.url;
+      card.target = '_blank';
+      card.rel = 'noopener noreferrer';
+      card.innerHTML = `<span>${p.name}</span>`;
+      track.appendChild(card);
+    });
+  };
+
+  buildCards(projects);
+  buildCards(projects);
+
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+  let autoScroll = true;
+
+  const cardWidth = 240;
+  const gap = 16;
+  const step = 0.8;
+  const totalWidth = projects.length * (cardWidth + gap);
+
+  track.addEventListener('mousedown', (e) => {
+    isDown = true;
+    autoScroll = false;
+    track.classList.add('grabbing');
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+  });
+
+  track.addEventListener('mouseleave', () => {
+    isDown = false;
+    autoScroll = true;
+    track.classList.remove('grabbing');
+  });
+
+  track.addEventListener('mouseup', () => {
+    isDown = false;
+    setTimeout(() => { autoScroll = true; }, 1000);
+    track.classList.remove('grabbing');
+  });
+
+  track.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - track.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    track.scrollLeft = scrollLeft - walk;
+  });
+
+  track.addEventListener('mouseenter', () => {
+    autoScroll = false;
+  });
+
+  track.addEventListener('mouseleave', () => {
+    setTimeout(() => { autoScroll = true; }, 500);
+  });
+
+  const loop = () => {
+    if (autoScroll) {
+      track.scrollLeft += step;
+      if (track.scrollLeft >= totalWidth) {
+        track.scrollLeft = 0;
+      }
+    }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
