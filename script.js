@@ -150,7 +150,6 @@ if (track) {
     items.forEach((p) => {
       const card = document.createElement('div');
       card.className = 'project-card';
-      card.dataset.url = p.url;
       card.innerHTML = `<span>${p.name}</span>`;
 
       card.addEventListener('click', () => {
@@ -185,57 +184,59 @@ if (track) {
     });
   }
 
+  const cardWidth = 260;
+  const gap = 16;
+  const step = 1;
+  const setWidth = projects.length * (cardWidth + gap);
+  const wrapper = track.parentElement;
+
   let isDown = false;
   let startX;
-  let scrollLeft;
+  let dragOffset = 0;
   let autoScroll = true;
+  let offset = 0;
 
-  const cardWidth = 240;
-  const step = 0.8;
-  const totalWidth = projects.length * (cardWidth + 16);
+  const updateTransform = () => {
+    track.style.transform = `translateX(${offset}px)`;
+  };
 
-  track.addEventListener('mousedown', (e) => {
+  wrapper.addEventListener('mousedown', (e) => {
     isDown = true;
     autoScroll = false;
-    track.classList.add('grabbing');
-    startX = e.pageX - track.offsetLeft;
-    scrollLeft = track.scrollLeft;
+    wrapper.classList.add('grabbing');
+    startX = e.clientX;
+    dragOffset = offset;
   });
 
-  track.addEventListener('mouseleave', () => {
-    isDown = false;
-    autoScroll = true;
-    track.classList.remove('grabbing');
+  document.addEventListener('mouseup', () => {
+    if (isDown) {
+      isDown = false;
+      wrapper.classList.remove('grabbing');
+      setTimeout(() => { autoScroll = true; }, 800);
+    }
   });
 
-  track.addEventListener('mouseup', () => {
-    isDown = false;
-    setTimeout(() => { autoScroll = true; }, 1000);
-    track.classList.remove('grabbing');
-  });
-
-  track.addEventListener('mousemove', (e) => {
+  document.addEventListener('mousemove', (e) => {
     if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - track.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    track.scrollLeft = scrollLeft - walk;
+    offset = dragOffset + (e.clientX - startX);
+    updateTransform();
   });
 
-  track.addEventListener('mouseenter', () => {
+  wrapper.addEventListener('mouseenter', () => {
     autoScroll = false;
   });
 
-  track.addEventListener('mouseleave', () => {
+  wrapper.addEventListener('mouseleave', () => {
     setTimeout(() => { autoScroll = true; }, 500);
   });
 
   const loop = () => {
     if (autoScroll) {
-      track.scrollLeft += step;
-      if (track.scrollLeft >= totalWidth) {
-        track.scrollLeft = 0;
+      offset -= step;
+      if (offset <= -setWidth) {
+        offset += setWidth;
       }
+      updateTransform();
     }
     requestAnimationFrame(loop);
   };
