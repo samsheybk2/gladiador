@@ -152,6 +152,16 @@ if (track) {
       card.className = 'project-card';
       card.innerHTML = `<span>${p.name}</span>`;
 
+      const nameSpan = card.querySelector('span');
+
+      card.addEventListener('mouseenter', () => {
+        nameSpan.textContent = 'Ver vista previa';
+      });
+
+      card.addEventListener('mouseleave', () => {
+        nameSpan.textContent = p.name;
+      });
+
       card.addEventListener('click', () => {
         if (!isDown) {
           modalIframe.src = p.url;
